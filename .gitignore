@@ -23,8 +23,12 @@ target/
 Cargo.lock
 
 # Go
-*.sum
 pkg/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
 # IDEs
 .vscode/
