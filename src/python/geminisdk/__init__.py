@@ -32,7 +32,7 @@ For more information, see:
 - Gemini CLI: https://github.com/google-gemini/gemini-cli
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __author__ = "OEvortex"
 
 # Client

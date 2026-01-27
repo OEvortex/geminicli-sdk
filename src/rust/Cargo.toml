@@ -1,6 +1,6 @@
 [package]
 name = "geminisdk"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["OEvortex"]
 description = "Rust SDK for Google Gemini Code Assist API - similar to GitHub Copilot SDK"

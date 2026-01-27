@@ -1,6 +1,6 @@
 {
   "name": "geminisdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TypeScript SDK for Google Gemini Code Assist API - similar to GitHub Copilot SDK",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
