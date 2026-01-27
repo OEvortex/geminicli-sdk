@@ -1,0 +1,77 @@
+name: Version Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      create_release:
+        description: 'Create release after bump?'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    name: Bump Version
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.bump.outputs.new_version }}
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Get current version
+        id: current
+        run: |
+          echo "version=$(cat VERSION | tr -d '\n')" >> $GITHUB_OUTPUT
+      
+      - name: Bump version
+        id: bump
+        run: |
+          python scripts/sync_version.py --bump ${{ inputs.bump_type }}
+          NEW_VERSION=$(cat VERSION | tr -d '\n')
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Bumped from ${{ steps.current.outputs.version }} to $NEW_VERSION"
+      
+      - name: Commit changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -A
+          git commit -m "chore: bump version to ${{ steps.bump.outputs.new_version }}"
+          git push
+      
+      - name: Create and push tag
+        if: inputs.create_release
+        run: |
+          git tag "v${{ steps.bump.outputs.new_version }}"
+          git push origin "v${{ steps.bump.outputs.new_version }}"
+      
+      - name: Summary
+        run: |
+          echo "## Version Bumped! 🎉" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Previous:** ${{ steps.current.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **New:** ${{ steps.bump.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.create_release }}" = "true" ]; then
+            echo "📦 Release workflow will be triggered automatically." >> $GITHUB_STEP_SUMMARY
+          fi

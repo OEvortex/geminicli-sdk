@@ -1,0 +1,60 @@
+{
+  "name": "geminisdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for Google Gemini Code Assist API - similar to GitHub Copilot SDK",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "gemini",
+    "google",
+    "ai",
+    "sdk",
+    "code-assist",
+    "llm",
+    "typescript"
+  ],
+  "author": "OEvortex",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OEvortex/geminicli-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/OEvortex/geminicli-sdk/issues"
+  },
+  "homepage": "https://github.com/OEvortex/geminicli-sdk#readme",
+  "dependencies": {
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.0",
+    "eslint": "^8.55.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

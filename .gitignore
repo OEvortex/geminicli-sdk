@@ -1,7 +1,41 @@
+# Python
 .venv
 .env
 __pycache__/
 *.pyc
-.vscode/
 .ruff_cache/
 .mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# TypeScript/JavaScript
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Rust
+target/
+Cargo.lock
+
+# Go
+*.sum
+pkg/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

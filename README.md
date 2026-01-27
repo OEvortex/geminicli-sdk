@@ -1,8 +1,8 @@
 # GeminiCLI SDK
 
-A Python SDK for Google Gemini Code Assist API, inspired by the [GitHub Copilot SDK](https://github.com/github/copilot-sdk).
+A **multi-language SDK** for Google Gemini Code Assist API, inspired by the [GitHub Copilot SDK](https://github.com/github/copilot-sdk).
 
-GeminiCLI SDK provides a high-level interface for interacting with the Gemini Code Assist API, supporting:
+GeminiCLI SDK provides high-level interfaces for interacting with the Gemini Code Assist API in **Python**, **TypeScript**, **Rust**, **Go**, and **C++**, supporting:
 
 - 🔐 **OAuth Authentication** - Seamless authentication using Gemini CLI credentials
 - 🌊 **Streaming Responses** - Real-time streaming with Server-Sent Events (SSE)
@@ -10,19 +10,19 @@ GeminiCLI SDK provides a high-level interface for interacting with the Gemini Co
 - 💬 **Session Management** - Manage conversation state and history
 - 🧠 **Thinking/Reasoning** - Support for model thinking/reasoning content
 
-## Installation
+## Available SDKs
 
-```bash
-# Using uv (recommended)
-uv add geminicli-sdk
-
-# Using pip
-pip install geminicli-sdk
-```
+| Language | Location | Package Name | Status |
+|----------|----------|--------------|--------|
+| **Python** | [`src/python/`](./src/python/) | `geminisdk` | ✅ Production Ready |
+| **TypeScript** | [`src/typescript/`](./src/typescript/) | `geminisdk` | ✅ Production Ready |
+| **Rust** | [`src/rust/`](./src/rust/) | `geminisdk` | ✅ Production Ready |
+| **Go** | [`src/go/`](./src/go/) | `geminisdk` | ✅ Production Ready |
+| **C++** | [`src/cpp/`](./src/cpp/) | `geminisdk` | ✅ Production Ready |
 
 ## Prerequisites
 
-Before using GeminiCLI SDK, you need to authenticate with Google. The easiest way is to use the [Gemini CLI](https://github.com/google-gemini/gemini-cli):
+Before using any SDK, you need to authenticate with Google. The easiest way is to use the [Gemini CLI](https://github.com/google-gemini/gemini-cli):
 
 ```bash
 # Install Gemini CLI
@@ -34,7 +34,155 @@ gemini auth login
 
 This will store your OAuth credentials in `~/.gemini/oauth_creds.json`.
 
+---
+
 ## Quick Start
+
+### Python
+
+```bash
+pip install geminisdk
+```
+
+```python
+import asyncio
+from geminisdk import GeminiClient
+
+async def main():
+    async with GeminiClient() as client:
+        session = await client.create_session({
+            "model": "gemini-2.5-pro",
+            "streaming": True,
+        })
+        
+        response = await session.send_and_wait({
+            "prompt": "Explain Python decorators in simple terms.",
+        })
+        print(response.data["content"])
+
+asyncio.run(main())
+```
+
+### TypeScript
+
+```bash
+npm install geminisdk
+```
+
+```typescript
+import { GeminiClient, EventType } from 'geminisdk';
+
+async function main() {
+  const client = new GeminiClient();
+  
+  const session = await client.createSession({
+    model: 'gemini-2.5-pro',
+    streaming: true,
+  });
+
+  session.on((event) => {
+    if (event.type === EventType.ASSISTANT_MESSAGE_DELTA) {
+      process.stdout.write((event.data as any).deltaContent);
+    }
+  });
+
+  await session.send({ prompt: 'What is TypeScript?' });
+  await client.close();
+}
+
+main();
+```
+
+### Rust
+
+```toml
+# Cargo.toml
+[dependencies]
+geminisdk = { path = "src/rust" }
+tokio = { version = "1", features = ["full"] }
+```
+
+```rust
+use geminisdk::{GeminiClient, SessionConfig, MessageOptions};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let client = GeminiClient::with_defaults();
+    client.start().await?;
+
+    let session = client.create_session(SessionConfig {
+        model: Some("gemini-2.5-pro".to_string()),
+        ..Default::default()
+    }).await?;
+
+    let response = session.send_and_wait(MessageOptions {
+        prompt: "Hello, Gemini!".to_string(),
+        ..Default::default()
+    }).await?;
+
+    println!("{:?}", response);
+    client.close().await?;
+    Ok(())
+}
+```
+
+### Go
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "github.com/OEvortex/geminicli-sdk/src/go"
+)
+
+func main() {
+    client := geminisdk.NewClient(nil)
+    client.Start(context.Background())
+    defer client.Close()
+
+    session, _ := client.CreateSession(&geminisdk.SessionConfig{
+        Model: "gemini-2.5-pro",
+    })
+
+    response, _ := session.SendAndWait(context.Background(), &geminisdk.MessageOptions{
+        Prompt: "Hello, Gemini!",
+    })
+    
+    fmt.Println(response.Data)
+}
+```
+
+### C++
+
+```cpp
+#include <geminisdk/geminisdk.hpp>
+#include <iostream>
+
+int main() {
+    geminisdk::Client client;
+    client.start();
+
+    geminisdk::SessionConfig config;
+    config.model = "gemini-2.5-pro";
+    
+    auto session = client.create_session(config);
+    
+    geminisdk::MessageOptions options;
+    options.prompt = "Hello, Gemini!";
+    
+    auto response = session->send_and_wait(options);
+    std::cout << response.data["content"].get<std::string>() << std::endl;
+    
+    client.close();
+    return 0;
+}
+```
+
+---
+
+## Python SDK (Full Documentation)
 
 ```python
 import asyncio

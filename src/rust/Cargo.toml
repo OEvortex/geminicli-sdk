@@ -1,0 +1,31 @@
+[package]
+name = "geminisdk"
+version = "0.1.0"
+edition = "2021"
+authors = ["OEvortex"]
+description = "Rust SDK for Google Gemini Code Assist API - similar to GitHub Copilot SDK"
+license = "MIT"
+repository = "https://github.com/OEvortex/geminicli-sdk"
+documentation = "https://docs.rs/geminisdk"
+readme = "README.md"
+keywords = ["gemini", "google", "ai", "sdk", "llm"]
+categories = ["api-bindings", "asynchronous"]
+
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+reqwest = { version = "0.11", features = ["json", "stream"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+async-trait = "0.1"
+uuid = { version = "1.6", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+futures = "0.3"
+tokio-stream = "0.1"
+dirs = "5.0"
+url = "2.5"
+log = "0.4"
+base64 = "0.21"
+
+[dev-dependencies]
+tokio-test = "0.4"

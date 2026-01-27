@@ -1,0 +1,62 @@
+version: 2
+updates:
+  # Python SDK
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+    groups:
+      python-dependencies:
+        patterns:
+          - "*"
+
+  # TypeScript SDK
+  - package-ecosystem: "npm"
+    directory: "/src/typescript"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "typescript"
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
+
+  # Rust SDK
+  - package-ecosystem: "cargo"
+    directory: "/src/rust"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "rust"
+    groups:
+      cargo-dependencies:
+        patterns:
+          - "*"
+
+  # Go SDK
+  - package-ecosystem: "gomod"
+    directory: "/src/go"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
