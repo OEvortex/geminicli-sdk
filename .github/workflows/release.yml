@@ -200,7 +200,7 @@ jobs:
           cmake --build build --config Release
       
       - name: Upload C++ artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: cpp-sdk
           path: src/cpp/build/
