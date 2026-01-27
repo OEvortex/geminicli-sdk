@@ -24,7 +24,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Get version
         id: version
@@ -53,7 +53,7 @@ jobs:
     needs: verify
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -82,7 +82,7 @@ jobs:
     needs: verify
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -114,7 +114,7 @@ jobs:
     needs: verify
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -133,7 +133,7 @@ jobs:
     needs: verify
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       
@@ -176,7 +176,7 @@ jobs:
     needs: verify
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Set up CMake
         uses: actions/cache@v4
@@ -214,7 +214,7 @@ jobs:
     if: always() && needs.verify.result == 'success'
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Download C++ artifacts
         uses: actions/download-artifact@v4
