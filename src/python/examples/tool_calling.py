@@ -9,7 +9,7 @@ This example demonstrates:
 
 import asyncio
 
-from geminisdk import GeminiClient, EventType, define_tool, create_tool
+from geminisdk import EventType, GeminiClient, create_tool, define_tool
 
 
 # Define a tool using the decorator
@@ -91,6 +91,7 @@ async def main():
     print("=== Tool Calling Example ===\n")
     
     async with GeminiClient() as client:
+        # Example 1: programmatic Tool objects and decorated tools
         session = await client.create_session({
             "model": "gemini-2.5-pro",
             "tools": [get_weather, calculate, search_tool],
@@ -117,6 +118,16 @@ async def main():
         await session.send({
             "prompt": "What's the weather in Tokyo and what is 15 * 23?",
         })
+
+        # Example 2: declarative dict-style tool specs (e.g. gemini-cli built-ins)
+        # Dict specs like {"googleSearch": {}} are automatically normalized to
+        # Tool objects so the session can be created without AttributeError.
+        session2 = await client.create_session({
+            "model": "gemini-2.5-pro",
+            "tools": [{"googleSearch": {}}],
+        })
+        print("\n[Declarative tool session created successfully]")
+        await session2.destroy()
 
 
 if __name__ == "__main__":
