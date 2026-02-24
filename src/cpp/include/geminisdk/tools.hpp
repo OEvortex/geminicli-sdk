@@ -109,6 +109,33 @@ Tool define_tool(
 );
 
 /**
+ * Create a declarative tool (without a handler) from a name and optional parameters.
+ *
+ * This is the C++ equivalent of Python's dict-style specs like {"googleSearch": {}}.
+ * It is intended for gemini-cli built-in tools that do not require a local handler.
+ *
+ * @param name Tool name (e.g. "googleSearch")
+ * @param params Optional parameters JSON schema
+ * @return Tool definition
+ */
+Tool declarative_tool(
+    const std::string& name,
+    const std::optional<json>& params = std::nullopt
+);
+
+/**
+ * Normalize a JSON array of declarative tool specs into a vector of Tool objects.
+ *
+ * Accepts JSON of the form: [{"googleSearch": {}}, {"codeExecution": {}}].
+ * Each element must be a JSON object whose keys are tool names. This mirrors
+ * Python's _normalize_tools for dict-style specs.
+ *
+ * @param specs JSON array of declarative tool specs
+ * @return Normalized list of Tool objects
+ */
+std::vector<Tool> normalize_tools_from_json(const json& specs);
+
+/**
  * Create a success tool result
  * @param text Result text
  * @return Tool result

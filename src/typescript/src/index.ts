@@ -51,6 +51,7 @@ export {
   ToolRegistry,
   createTool,
   defineTool,
+  normalizeTools,
   getDefaultRegistry,
   registerTool,
 } from './tools.js';
@@ -82,6 +83,7 @@ export {
   ToolResult,
   ToolHandler,
   Tool,
+  ToolSpec,
   // Generation
   GenerationConfig,
   ThinkingConfig,

@@ -55,7 +55,8 @@ pub use client::GeminiClient;
 pub use errors::{GeminiSDKError, Result};
 pub use session::GeminiSession;
 pub use tools::{
-    create_tool, failure_result, rejected_result, success_result, ToolParameters, ToolRegistry,
+    create_tool, declarative_tool, failure_result, normalize_tools_from_value, rejected_result,
+    success_result, ToolParameters, ToolRegistry,
 };
 pub use types::{
     // Constants

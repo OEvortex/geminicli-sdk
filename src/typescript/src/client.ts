@@ -6,6 +6,7 @@ import { GeminiOAuthManager } from './auth.js';
 import { GeminiBackend } from './backend.js';
 import { SessionNotFoundError } from './exceptions.js';
 import { GeminiSession } from './session.js';
+import { normalizeTools } from './tools.js';
 import {
   ConnectionState,
   GEMINI_CLI_MODELS,
@@ -133,11 +134,14 @@ export class GeminiClient {
     const sessionId = config.sessionId ?? generateUUID();
     const model = config.model ?? 'gemini-2.5-pro';
 
+    // Normalize tools so dict-style declarative specs become Tool objects.
+    const normalizedTools = normalizeTools(config.tools ?? []);
+
     const session = new GeminiSession({
       sessionId,
       model,
       backend: this._backend,
-      tools: config.tools,
+      tools: normalizedTools,
       systemMessage: config.systemMessage,
       generationConfig: config.generationConfig,
       thinkingConfig: config.thinkingConfig,
