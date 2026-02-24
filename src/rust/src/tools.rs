@@ -24,6 +24,58 @@ pub fn create_tool(
     }
 }
 
+/// Creates a declarative tool (without a handler) from a name and optional parameters.
+///
+/// This is the Rust equivalent of passing `{"googleSearch": {}}` in Python. It is
+/// intended for gemini-cli built-in tools that are declared by name and do not
+/// require a local handler function.
+///
+/// # Example
+/// ```rust
+/// let tool = declarative_tool("googleSearch", None);
+/// ```
+pub fn declarative_tool(name: impl Into<String>, params: Option<Value>) -> Tool {
+    let name = name.into();
+    Tool {
+        name: name.clone(),
+        description: format!("Tool: {}", name),
+        parameters: params,
+    }
+}
+
+/// Normalizes a JSON array of declarative tool specs into a `Vec<Tool>`.
+///
+/// Accepts JSON in the form: `[{"googleSearch": {}}, {"codeExecution": {}}]`.
+/// Each array element must be a JSON object whose keys are tool names and whose
+/// values are the (possibly empty) parameter schemas.  This mirrors Python's
+/// `_normalize_tools` for dict-style specs.
+///
+/// # Example
+/// ```rust
+/// let specs = serde_json::json!([{"googleSearch": {}}, {"codeExecution": {}}]);
+/// let tools = normalize_tools_from_value(&specs);
+/// assert_eq!(tools.len(), 2);
+/// assert_eq!(tools[0].name, "googleSearch");
+/// ```
+pub fn normalize_tools_from_value(specs: &Value) -> Vec<Tool> {
+    let mut result = Vec::new();
+    if let Value::Array(arr) = specs {
+        for item in arr {
+            if let Value::Object(map) = item {
+                for (name, params) in map {
+                    let parameters = if params.as_object().map_or(false, |m| !m.is_empty()) {
+                        Some(params.clone())
+                    } else {
+                        None
+                    };
+                    result.push(declarative_tool(name.clone(), parameters));
+                }
+            }
+        }
+    }
+    result
+}
+
 /// A macro-friendly helper to define tool parameters.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ToolParameters {
@@ -259,6 +311,31 @@ mod tests {
         assert_eq!(tool.name, "test_tool");
         assert_eq!(tool.description, "A test tool");
         assert!(tool.parameters.is_some());
+    }
+
+    #[test]
+    fn test_declarative_tool() {
+        let tool = declarative_tool("googleSearch", None);
+        assert_eq!(tool.name, "googleSearch");
+        assert_eq!(tool.description, "Tool: googleSearch");
+        assert!(tool.parameters.is_none());
+    }
+
+    #[test]
+    fn test_normalize_tools_from_value() {
+        let specs = serde_json::json!([{"googleSearch": {}}, {"codeExecution": {}}]);
+        let tools = normalize_tools_from_value(&specs);
+        assert_eq!(tools.len(), 2);
+        assert_eq!(tools[0].name, "googleSearch");
+        assert_eq!(tools[1].name, "codeExecution");
+    }
+
+    #[test]
+    fn test_normalize_tools_with_params() {
+        let specs = serde_json::json!([{"myTool": {"type": "object", "properties": {}}}]);
+        let tools = normalize_tools_from_value(&specs);
+        assert_eq!(tools.len(), 1);
+        assert!(tools[0].parameters.is_some());
     }
 
     #[test]

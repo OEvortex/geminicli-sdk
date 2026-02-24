@@ -194,3 +194,38 @@ func DefineTool(name, description string, params *ToolParametersBuilder) Tool {
 		Parameters:  paramsJSON,
 	}
 }
+
+// DeclarativeTool creates a Tool from a declarative name and optional parameter schema.
+// This mirrors Python's dict-style specs like {"googleSearch": {}} and is intended
+// for gemini-cli built-in tools that do not require a local handler.
+//
+//	session, _ := client.CreateSession(ctx, &geminisdk.SessionConfig{
+//	    Tools: geminisdk.NormalizeTools([]map[string]interface{}{
+//	        {"googleSearch": nil},
+//	    }),
+//	})
+func DeclarativeTool(name string, params map[string]interface{}) Tool {
+	return CreateTool(name, "Tool: "+name, params)
+}
+
+// NormalizeTools converts a slice of declarative tool specs into a []Tool.
+// Each spec is a map with a single key (the tool name) and a value that is
+// the tool's parameter schema (or nil for built-in tools without parameters).
+//
+//	tools := geminisdk.NormalizeTools([]map[string]interface{}{
+//	    {"googleSearch": nil},
+//	    {"codeExecution": nil},
+//	})
+func NormalizeTools(specs []map[string]interface{}) []Tool {
+	var result []Tool
+	for _, spec := range specs {
+		for name, params := range spec {
+			var paramsMap map[string]interface{}
+			if m, ok := params.(map[string]interface{}); ok {
+				paramsMap = m
+			}
+			result = append(result, CreateTool(name, "Tool: "+name, paramsMap))
+		}
+	}
+	return result
+}

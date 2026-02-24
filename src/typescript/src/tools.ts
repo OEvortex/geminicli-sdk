@@ -70,6 +70,34 @@ export function createTool(
 }
 
 /**
+ * Normalize tool specifications into Tool objects.
+ *
+ * Accepts fully-formed Tool objects and declarative dict-style specs used by
+ * gemini-cli built-in tools (e.g. `{ googleSearch: {} }`). Dict entries are
+ * converted into Tool objects with no handler; the tool name is used as the
+ * key and the value (if a non-empty object) is stored as the parameters schema.
+ *
+ * @param specs Array of Tool objects or declarative dict specs.
+ * @returns Array of normalized Tool objects.
+ */
+export function normalizeTools(specs: Array<Tool | Record<string, unknown>>): Tool[] {
+  return specs.flatMap((spec) => {
+    if (typeof (spec as Tool).name === 'string' && typeof (spec as Tool).description === 'string') {
+      return [spec as Tool];
+    }
+    return Object.entries(spec).map(([name, params]) =>
+      createTool(
+        name,
+        `Tool: ${name}`,
+        typeof params === 'object' && params !== null
+          ? (params as Record<string, unknown>)
+          : {},
+      )
+    );
+  });
+}
+
+/**
  * Registry for managing tools.
  */
 export class ToolRegistry {

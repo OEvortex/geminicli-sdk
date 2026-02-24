@@ -29,6 +29,7 @@ from .exceptions import (
     SessionNotFoundError,
 )
 from .session import GeminiSession
+from .tools import create_tool
 from .types import (
     GEMINI_CLI_MODELS,
     ConnectionState,
@@ -36,9 +37,45 @@ from .types import (
     ModelInfo,
     SessionConfig,
     SessionMetadata,
+    Tool,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _normalize_tools(specs: list[Any] | None) -> list[Tool]:
+    """Normalize tool specifications into Tool objects.
+
+    Accepts Tool dataclass instances, objects with a ``.name`` attribute,
+    and dict-style declarative tool specs (e.g. ``{"googleSearch": {}}``)
+    as used by the gemini-cli built-in tools.
+
+    Args:
+        specs: Raw tool specifications from session config.
+
+    Returns:
+        A list of Tool objects.
+    """
+    result: list[Tool] = []
+    if not specs:
+        return result
+    for s in specs:
+        if isinstance(s, Tool):
+            result.append(s)
+            continue
+        if isinstance(s, dict):
+            for name, params in s.items():
+                result.append(
+                    create_tool(
+                        name=name,
+                        description=f"Tool: {name}",
+                        parameters=params if isinstance(params, dict) else {},
+                    )
+                )
+            continue
+        # Fallback: already a Tool-like object (e.g. from define_tool decorator)
+        result.append(s)
+    return result
 
 
 class GeminiClient:
@@ -255,12 +292,15 @@ class GeminiClient:
         session_id = cfg.get("session_id") or str(uuid.uuid4())
         model = cfg.get("model", "gemini-2.5-pro")
 
+        # Normalize tools so dict-style declarative specs become Tool objects
+        normalized_tools = _normalize_tools(cfg.get("tools"))
+
         # Create session
         session = GeminiSession(
             session_id=session_id,
             model=model,
             backend=self._backend,
-            tools=cfg.get("tools"),
+            tools=normalized_tools or None,
             system_message=cfg.get("system_message"),
             generation_config=cfg.get("generation_config"),
             thinking_config=cfg.get("thinking_config"),

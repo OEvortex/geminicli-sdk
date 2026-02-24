@@ -53,6 +53,16 @@ async function main(): Promise<void> {
       console.log(`\nFinal response: ${responseData.content}`);
     }
 
+    // Example: declarative dict-style tool specs (gemini-cli built-ins).
+    // Dict specs like { googleSearch: {} } are automatically normalized to
+    // Tool objects so the session can be created without any runtime errors.
+    const session2 = await client.createSession({
+      model: 'gemini-2.5-pro',
+      tools: [{ googleSearch: {} }],
+    });
+    console.log('\n[Declarative tool session created successfully]');
+    await session2.destroy();
+
     await client.close();
   } catch (error) {
     console.error('Error:', error);

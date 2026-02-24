@@ -84,6 +84,38 @@ Tool define_tool(
     return create_tool(name, description, builder.build());
 }
 
+Tool declarative_tool(
+    const std::string& name,
+    const std::optional<json>& params
+) {
+    Tool tool;
+    tool.name = name;
+    tool.description = "Tool: " + name;
+    if (params.has_value() && !params->empty()) {
+        tool.parameters = params;
+    }
+    return tool;
+}
+
+std::vector<Tool> normalize_tools_from_json(const json& specs) {
+    std::vector<Tool> result;
+    if (!specs.is_array()) {
+        return result;
+    }
+    for (const auto& item : specs) {
+        if (item.is_object()) {
+            for (auto it = item.begin(); it != item.end(); ++it) {
+                std::optional<json> params;
+                if (it.value().is_object() && !it.value().empty()) {
+                    params = it.value();
+                }
+                result.push_back(declarative_tool(it.key(), params));
+            }
+        }
+    }
+    return result;
+}
+
 ToolResult success_result(const std::string& text) {
     ToolResult result;
     result.result_type = ToolResultType::Success;

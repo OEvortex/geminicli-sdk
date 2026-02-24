@@ -142,6 +142,13 @@ export interface Tool {
   handler?: ToolHandler;
 }
 
+/**
+ * A tool specification accepted by createSession.
+ * Either a fully-formed Tool object or a declarative dict-style spec
+ * (e.g. `{ googleSearch: {} }`) as used by gemini-cli built-in tools.
+ */
+export type ToolSpec = Tool | Record<string, unknown>;
+
 // =============================================================================
 // Generation Config Types
 // =============================================================================
@@ -190,7 +197,7 @@ export interface LLMChunk {
 export interface SessionConfig {
   sessionId?: string;
   model?: string;
-  tools?: Tool[];
+  tools?: ToolSpec[];
   systemMessage?: string;
   generationConfig?: GenerationConfig;
   thinkingConfig?: ThinkingConfig;
